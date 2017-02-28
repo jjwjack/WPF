@@ -35,13 +35,18 @@ namespace OperateExcel
         {
             InitializeComponent();
         }
-
+        //m_Excel为excel应用程序对象
         private Microsoft.Office.Interop.Excel.Application m_Excel;
+        //m_Workbooks为所有工作簿对象
         private Workbooks m_Workbooks;
+        //parentFirstWordCount总表第一个单词数量
         private int parentFirstWordCount = -1;
+        //parentSecondWordCount总表第二个单词数量
         private int parentSecondWordCount = -1;
+        //parentWorkBook为工作簿对象
         private Workbook parentWorkBook;
 
+        //选择地址按钮
         private void StartTOChangeButton_Click(object sender, RoutedEventArgs e)
         {
             //打开Excel
@@ -157,11 +162,11 @@ namespace OperateExcel
             }
 
         }
-
+        //新建三个字典，键值对为字符串和数组，分别为第一个sheet所有单词列表，第二个sheet所有单词列表，子表格所有单词列表
         private Dictionary<String, ArrayList> firstSheetWholeWordList = new Dictionary<string, ArrayList>();
         private Dictionary<String, ArrayList> secondSheetWholeWordList = new Dictionary<string, ArrayList>();
         private Dictionary<String, ArrayList> subTableWholeWordList = new Dictionary<string, ArrayList>();
-
+        //方法：获取有效的单元格行数
         private int GetValidCellRowCount(Worksheet sheet, Dictionary<String, ArrayList> wordDict)
         {
             int i = 0;
@@ -199,7 +204,7 @@ namespace OperateExcel
 
             return i;
         }
-
+        //方法：把没有找到的单词加入总表
         private void AddUnfoundWordToParent(ArrayList wordNotFound, ArrayList phraseNotFound)
         {
             string parentWordTableName = parentWorkBook.FullName;
@@ -223,7 +228,7 @@ namespace OperateExcel
                 j++;
             }
         }
-
+        //方法：检查是否在总表中存在
         private Boolean checkIfExistInParent(String word, out String meaning, out String phoneticSymbol, int validCellRowCountFirstSheet, int validCellRowCountSecondSheet)
         {
             //Workbook parentWorkBook = m_Workbooks.get_Item(2);
@@ -278,7 +283,7 @@ namespace OperateExcel
             return false;
 
         }
-
+        //当界面加载时，实例化两个对象
         private void onFormLoaded(object sender, RoutedEventArgs e)
         {
             //打开Excel
@@ -286,7 +291,7 @@ namespace OperateExcel
             m_Workbooks = m_Excel.Application.Workbooks;
             //initDataBase();
         }
-
+        //初始化数据库，生成各种字段
         private void initDataBase()
         {
             //IConfigurationSource source = new Castle.ActiveRecord.Framework.Config.XmlConfigurationSource("../TestCases/ActiveRecordConfig.xml");
@@ -300,7 +305,7 @@ namespace OperateExcel
             m.CreateAndFlush();
 
         }
-
+        //界面关闭时，退出excel
         private void onFormClosed(object sender, EventArgs e)
         {
 
@@ -308,7 +313,7 @@ namespace OperateExcel
             m_Excel.Quit();
             m_Excel = null;
         }
-
+        //选择分表路径
         private void chooseSubTabelPath(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
@@ -322,7 +327,7 @@ namespace OperateExcel
 
 
         }
-
+        //选择总表路径
         private void chooseParentTablePath(object sender, RoutedEventArgs e)
         {
             if (null != parentWorkBook)
@@ -355,7 +360,7 @@ namespace OperateExcel
             parentSecondWordCount = GetValidCellRowCount(secondSheet, secondSheetWholeWordList);
         }
 
-        //将各个子sheet页的内容插入到RES和Logic表中，并填入其他所缺的内容
+        //button4，将各个子sheet页的内容插入到RES和Logic表中，并填入其他所缺的内容
         private void insert_words_to_list(object sender, RoutedEventArgs e)
         {
             Regex pathrgx = new Regex(@".*\\(.*\..*)");
@@ -383,7 +388,7 @@ namespace OperateExcel
                 string tempSheetName = subTableSheet.Name;
                 if (tempSheetName.Contains("所有单词RES") ||
                     tempSheetName.Contains("所有单词logic") ||
-                    tempSheetName.Contains("读音唯一")||
+                    tempSheetName.Contains("读音唯一") ||
                     tempSheetName.Contains("_未分节")
                 )
                 {
@@ -478,7 +483,7 @@ namespace OperateExcel
             parentWorkBook.Save();
             MessageBox.Show("单词对应完毕！");
         }
-
+        //字体
         private int FontName(string fontName)
         {
             switch (fontName)
@@ -502,6 +507,7 @@ namespace OperateExcel
 
         private static SpObjectToken englishToken = null;
         private static SpObjectToken chineseToken = null;
+        //button5生成读音
         private void button5_Click(object sender, RoutedEventArgs e)
         {
             //数据库全部读出
